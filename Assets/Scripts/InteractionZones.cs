@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-// using System.Numerics;
 using UnityEngine;
 
 public class InteractionZones : MonoBehaviour
@@ -10,6 +9,10 @@ public class InteractionZones : MonoBehaviour
     Rigidbody agentBody;
     public GameObject centerPlane;
     static float AGENT_HEIGHT_OFFSET = 1f;
+
+    // movement constants
+    float rotationSpeed = 45f;
+    float moveSpeed = 4f;
 
     // Variables that Govern Agent Movement
     private bool userActive = true;
@@ -57,12 +60,6 @@ public class InteractionZones : MonoBehaviour
         inactiveZoneCoords[zoneState.publicZone] = new ZonePolarCoord(90f, 12f, 12f, 20f);
     }
 
-
-    // Test rotate vars
-    // float radius = 5f;
-    // float angle = 90f;
-    float rotationSpeed = 45f;
-
     // Update is called once per frame
     void Update()
     {
@@ -84,6 +81,16 @@ public class InteractionZones : MonoBehaviour
         if (Input.GetKey(KeyCode.RightArrow))
         {
             polar.angle += rotationSpeed * Time.deltaTime;
+        }
+
+        //move agent
+        if (Input.GetKey(KeyCode.RightControl) && (polar.minRad < polar.radius))
+        {
+            polar.radius -= moveSpeed * Time.deltaTime;
+        }
+        if (Input.GetKey(KeyCode.RightShift) && (polar.radius < polar.maxRad))
+        {
+            polar.radius += moveSpeed * Time.deltaTime;
         }
 
         // prevents looping over/under 360 degrees
@@ -131,6 +138,7 @@ public class InteractionZones : MonoBehaviour
 
         // get the object to look at the center point no matter where we move it in zones
         // gravity is off and y-position locked so we don't move at all in y-axis
+        // will need to change when moving :(
         this.transform.LookAt(centerPoint);
     }
 
