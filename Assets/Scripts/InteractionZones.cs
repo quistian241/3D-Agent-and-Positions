@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+// using System.Numerics;
 using UnityEngine;
 
 public class InteractionZones : MonoBehaviour
@@ -21,7 +23,7 @@ public class InteractionZones : MonoBehaviour
     private zoneState activeState = zoneState.intimateZone;
     Vector3[] positions = new Vector3[4];
     Vector3[] customPositions = new Vector3[4];
-    
+
     private bool canMove = true;
     // Start is called before the first frame update
     void Awake()
@@ -31,47 +33,46 @@ public class InteractionZones : MonoBehaviour
         positions[1] = new Vector3(0, 1, 3.5f);
         positions[2] = new Vector3(0, 1, 8);
         positions[3] = new Vector3(0, 1, 12);
-        customPositions = positions;
+        customPositions[0] = new Vector3(0, 1, 2);
+        customPositions[1] = new Vector3(0, 1, 3.5f);
+        customPositions[2] = new Vector3(0, 1, 8);
+        customPositions[3] = new Vector3(0, 1, 12);
     }
+
+
+    // Test rotate vars
+    // float radius = 5f;
+    float angle = 90f;
+    float rotationSpeed = 45f;
 
     // Update is called once per frame
     void Update()
     {
-        // get the object to look at the center point no matter where we move it in zones
-        // gravity is off and y-position locked so we don't move at all in y-axis
+        // determine current state
+        zoneState currentState = userActive ? activeState : inactiveState;
         Vector3 centerPoint = centerPlane.transform.position;
         centerPoint.y = this.transform.position.y;
-        this.transform.LookAt(centerPoint);
+        float radius = CalculateHypotenuse(transform.position.x, transform.position.z);
 
-        // // if we do four hand poses then we can do this easily 
-        // // up down zones would be much harder or use way more if's
-        // if (Input.GetKeyDown(KeyCode.Alpha1))
-        // {
-        //     agentBody.detectCollisions = false;
-        //     agentBody.position = customPositions[0];
-        //     agentBody.detectCollisions = true;
-        // }
-        // else if (Input.GetKeyDown(KeyCode.Alpha2))
-        // {
-        //     agentBody.detectCollisions = false;
-        //     agentBody.position = customPositions[1];
-        //     agentBody.detectCollisions = true;
-        // }
-        // else if (Input.GetKeyDown(KeyCode.Alpha3))
-        // {
-        //     agentBody.detectCollisions = false;
-        //     agentBody.position = customPositions[2];
-        //     agentBody.detectCollisions = true;
-        // }
-        // else if (Input.GetKeyDown(KeyCode.Alpha4))
-        // {
-        //     agentBody.detectCollisions = false;
-        //     agentBody.position = customPositions[3];
-        //     agentBody.detectCollisions = true;
-        // }
+        // rotate the agent 
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            angle -= rotationSpeed * Time.deltaTime;
+        }
+        if (Input.GetKey(KeyCode.RightArrow))
+        {
+            angle += rotationSpeed * Time.deltaTime;
+        }
 
-        zoneState currentState = userActive ? activeState : inactiveState;
-        transform.position = positions[(int)currentState];  
+        if (angle < 0) angle += 360;
+        if (angle > 360f) angle -= 360f;
+
+        float rad = angle * Mathf.Deg2Rad;
+        Vector3 offset = new Vector3(Mathf.Cos(rad), 0, Mathf.Sin(rad)) * radius;
+
+
+        // customPositions[(int)currentState] = centerPoint + offset;
+        transform.position = customPositions[(int)currentState];
         // above will seemingly stay since key inputs will be phased out by hand inputs
 
         // Cycle up
@@ -98,6 +99,16 @@ public class InteractionZones : MonoBehaviour
             userActive = !userActive;
         }
 
+        // reset current position
+        if (Input.GetKeyDown(KeyCode.Backspace))
+        {
+            customPositions[(int)currentState] = positions[(int)currentState];
+        }
+
+
+        // get the object to look at the center point no matter where we move it in zones
+        // gravity is off and y-position locked so we don't move at all in y-axis
+        this.transform.LookAt(centerPoint);
     }
 
     void FixedUpdate()
@@ -112,24 +123,24 @@ public class InteractionZones : MonoBehaviour
     void changeState()
     {
         userActive = !userActive;
-        
+
         // intantly parse current state after change then move to that position
         zoneState currentState = userActive ? activeState : inactiveState;
-        transform.position = positions[(int)currentState];
+        transform.position = customPositions[(int)currentState];
     }
 
-    
+
     // On Hand Input Make the Agent Change Zone Up/Down
     void changeZoneUp()
-    { 
-        if (userActive) 
+    {
+        if (userActive)
             IncrementZone(ref activeState);
         else
             IncrementZone(ref inactiveState);
     }
 
     void changeZoneDown()
-    { 
+    {
         if (userActive)
             DecrementZone(ref activeState);
         else
@@ -168,5 +179,10 @@ public class InteractionZones : MonoBehaviour
         {
             state = (zoneState)prev;
         }
+    }
+
+    float CalculateHypotenuse(float x, float z)
+    {
+        return Mathf.Sqrt(x * x + z * z);
     }
 }
