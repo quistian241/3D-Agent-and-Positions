@@ -9,6 +9,7 @@ public class InteractionZones : MonoBehaviour
     // GameObject Agent;
     Rigidbody agentBody;
     public GameObject centerPlane;
+    static float AGENT_HEIGHT_OFFSET = 1f;
 
     // Variables that Govern Agent Movement
     private bool userActive = true;
@@ -19,60 +20,83 @@ public class InteractionZones : MonoBehaviour
         socialZone = 2,
         publicZone = 3
     };
+    public struct ZonePolarCoord
+    {
+        public float angle;
+        public float radius;
+        public float minRad;
+        public float maxRad;
+
+        public ZonePolarCoord(float angle, float radius, float minRad, float maxRad)
+        {
+            this.angle = angle;
+            this.radius = radius;
+            this.minRad = minRad;
+            this.maxRad = maxRad;
+        }
+    }
+    Dictionary<zoneState, ZonePolarCoord> activeZoneCoords = new();
+    Dictionary<zoneState, ZonePolarCoord> inactiveZoneCoords = new();
     private zoneState inactiveState = zoneState.socialZone;
     private zoneState activeState = zoneState.intimateZone;
-    Vector3[] positions = new Vector3[4];
-    Vector3[] customPositions = new Vector3[4];
-
     private bool canMove = true;
+
     // Start is called before the first frame update
     void Awake()
     {
         agentBody = GetComponent<Rigidbody>();
-        positions[0] = new Vector3(0, 1, 2);
-        positions[1] = new Vector3(0, 1, 3.5f);
-        positions[2] = new Vector3(0, 1, 8);
-        positions[3] = new Vector3(0, 1, 12);
-        customPositions[0] = new Vector3(0, 1, 2);
-        customPositions[1] = new Vector3(0, 1, 3.5f);
-        customPositions[2] = new Vector3(0, 1, 8);
-        customPositions[3] = new Vector3(0, 1, 12);
+
+        activeZoneCoords[zoneState.intimateZone] = new ZonePolarCoord(90f, 2f, 1.5f, 2.5f);
+        activeZoneCoords[zoneState.casualZone] = new ZonePolarCoord(90f, 3.5f, 2.5f, 4.5f);
+        activeZoneCoords[zoneState.socialZone] = new ZonePolarCoord(90f, 8f, 4.5f, 12f);
+        activeZoneCoords[zoneState.publicZone] = new ZonePolarCoord(90f, 12f, 12f, 20f);
+
+        inactiveZoneCoords[zoneState.intimateZone] = new ZonePolarCoord(90f, 2f, 1.5f, 2.5f);
+        inactiveZoneCoords[zoneState.casualZone] = new ZonePolarCoord(90f, 3.5f, 2.5f, 4.5f);
+        inactiveZoneCoords[zoneState.socialZone] = new ZonePolarCoord(90f, 8f, 4.5f, 12f);
+        inactiveZoneCoords[zoneState.publicZone] = new ZonePolarCoord(90f, 12f, 12f, 20f);
     }
 
 
     // Test rotate vars
     // float radius = 5f;
-    float angle = 90f;
+    // float angle = 90f;
     float rotationSpeed = 45f;
 
     // Update is called once per frame
     void Update()
     {
-        // determine current state
+        // determine current state, get the current dictionary, & then polar coords
         zoneState currentState = userActive ? activeState : inactiveState;
+        Dictionary<zoneState, ZonePolarCoord> currentDic = userActive ? activeZoneCoords : inactiveZoneCoords;
+        ZonePolarCoord polar = currentDic[currentState];
+
+        // get a center point to reference 
         Vector3 centerPoint = centerPlane.transform.position;
-        centerPoint.y = this.transform.position.y;
-        float radius = CalculateHypotenuse(transform.position.x, transform.position.z);
+        centerPoint.y = AGENT_HEIGHT_OFFSET;
+
 
         // rotate the agent 
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            angle -= rotationSpeed * Time.deltaTime;
+            polar.angle -= rotationSpeed * Time.deltaTime;
         }
         if (Input.GetKey(KeyCode.RightArrow))
         {
-            angle += rotationSpeed * Time.deltaTime;
+            polar.angle += rotationSpeed * Time.deltaTime;
         }
 
-        if (angle < 0) angle += 360;
-        if (angle > 360f) angle -= 360f;
+        // prevents looping over/under 360 degrees
+        polar.angle = (polar.angle + 360f) % 360;
+        currentDic[currentState] = polar;
 
-        float rad = angle * Mathf.Deg2Rad;
-        Vector3 offset = new Vector3(Mathf.Cos(rad), 0, Mathf.Sin(rad)) * radius;
+        // float rad = angle * Mathf.Deg2Rad;
+        float rad = polar.angle * Mathf.Deg2Rad;
+        Vector3 offset = new Vector3(Mathf.Cos(rad), 0, Mathf.Sin(rad)) * polar.radius;
 
 
-        // customPositions[(int)currentState] = centerPoint + offset;
-        transform.position = customPositions[(int)currentState];
+        // positions[(int)currentState] = centerPoint + offset;
+        transform.position = centerPoint + offset;
         // above will seemingly stay since key inputs will be phased out by hand inputs
 
         // Cycle up
@@ -102,9 +126,8 @@ public class InteractionZones : MonoBehaviour
         // reset current position
         if (Input.GetKeyDown(KeyCode.Backspace))
         {
-            customPositions[(int)currentState] = positions[(int)currentState];
+            // positions[(int)currentState] = positions[(int)currentState];
         }
-
 
         // get the object to look at the center point no matter where we move it in zones
         // gravity is off and y-position locked so we don't move at all in y-axis
@@ -113,20 +136,13 @@ public class InteractionZones : MonoBehaviour
 
     void FixedUpdate()
     {
-        // used for physics movements
-        // Vector3 center = centerPlane.transform.position;
-        // Vector3 direction = (transform.position - center).normalized; // away from plane center
-        // agentBody.velocity = direction * forceStrength; 
+        // no need to use (I think)
     }
 
     // take hand gesture input and change state from active -> inactive OR inactive -> active
     void changeState()
     {
         userActive = !userActive;
-
-        // intantly parse current state after change then move to that position
-        zoneState currentState = userActive ? activeState : inactiveState;
-        transform.position = customPositions[(int)currentState];
     }
 
 
