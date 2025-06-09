@@ -801,7 +801,7 @@ RectTransform:
   m_GameObject: {fileID: 150290243}
   m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0.17}
-  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
+  m_LocalScale: {x: 0.005, y: 0.005, z: 0.005}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1334659939}
@@ -838,6 +838,53 @@ MonoBehaviour:
     m_Bits: 4294967295
   pointer: {fileID: 1142927552}
   sortOrder: 0
+--- !u!1 &162469930
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 162469932}
+  - component: {fileID: 162469931}
+  m_Layer: 0
+  m_Name: MenuController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &162469931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 162469930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5251d3345f3aaca4eb578878f605734c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menu: {fileID: 150290243}
+  headLocation: {fileID: 1224107725}
+  distanceFromCamera: 1.5
+--- !u!4 &162469932
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 162469930}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.66012806, y: 1.0011301, z: 0.31849065}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &202191682
 GameObject:
   m_ObjectHideFlags: 0
@@ -2928,6 +2975,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1162722788}
   m_CullTransparentMesh: 1
+--- !u!4 &1224107725 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2483171112402263012, guid: f54012181eacade4ea242c65f804720f, type: 3}
+  m_PrefabInstance: {fileID: 1142927550}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1268441607 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3909402898764602882, guid: f54012181eacade4ea242c65f804720f, type: 3}
@@ -4661,3 +4713,4 @@ SceneRoots:
   - {fileID: 1362531451}
   - {fileID: 1142927550}
   - {fileID: 832100798}
+  - {fileID: 162469932}
