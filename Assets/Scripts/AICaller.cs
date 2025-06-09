@@ -26,7 +26,7 @@ public class aiTest : MonoBehaviour
     }
 
     public TextMeshProUGUI display;
-    private string API_KEY = "API_KEY"; // Please REMOVE this API key before pushing to GitHub
+    private string API_KEY = "AIzaSyDit56QeYkewdGxLasyABDd_XgT6tajFr0"; // Please REMOVE this API key before pushing to GitHub
 
     public void callGemini(string prompt)
     {
