@@ -188,9 +188,10 @@ public class InteractionZones : MonoBehaviour
     }
 
     // take hand gesture input and change state from active -> inactive OR inactive -> active
-    void changeState()
+    public void changeState()
     {
         userActive = !userActive;
+        Debug.Log("User Active: " + userActive);
     }
 
 
@@ -213,10 +214,11 @@ public class InteractionZones : MonoBehaviour
 
     // will be used to toggle agent move mode
     // either two hand signs to enter or one to toggle
-    void toggleZoneMovement()
+    public void toggleZoneMovement()
     {
         canMove = !canMove;
         canChangeZone = !canChangeZone;
+        Debug.Log("Can Move: " + canMove + ", Can Change Zone: " + canChangeZone);
     }
 
     void directionMove(string directionMove)
