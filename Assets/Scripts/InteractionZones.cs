@@ -15,7 +15,7 @@ public class InteractionZones : MonoBehaviour
     float moveSpeed = 4f;
 
     // Variables that Govern Agent Movement
-    private bool userActive = true;
+    private bool userActive = false;
     public enum zoneState
     {
         intimateZone = 0,
@@ -42,7 +42,8 @@ public class InteractionZones : MonoBehaviour
     Dictionary<zoneState, ZonePolarCoord> inactiveZoneCoords = new();
     private zoneState inactiveState = zoneState.socialZone;
     private zoneState activeState = zoneState.intimateZone;
-    private bool canMove = true;
+    private bool canMove = false;
+    private bool isMoving = false;
 
     // Start is called before the first frame update
     void Awake()
@@ -60,6 +61,12 @@ public class InteractionZones : MonoBehaviour
         inactiveZoneCoords[zoneState.publicZone] = new ZonePolarCoord(90f, 12f, 12f, 20f);
     }
 
+    private Vector3 previousPosition;
+    void Start()
+    {
+        previousPosition = transform.position;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -72,25 +79,31 @@ public class InteractionZones : MonoBehaviour
         Vector3 centerPoint = centerPlane.transform.position;
         centerPoint.y = AGENT_HEIGHT_OFFSET;
 
+        // default unless moving
+        isMoving = false;
 
         // rotate the agent 
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             polar.angle -= rotationSpeed * Time.deltaTime;
+            isMoving = true;
         }
         if (Input.GetKey(KeyCode.RightArrow))
         {
             polar.angle += rotationSpeed * Time.deltaTime;
+            isMoving = true;
         }
 
         //move agent
         if (Input.GetKey(KeyCode.RightControl) && (polar.minRad < polar.radius))
         {
             polar.radius -= moveSpeed * Time.deltaTime;
+            isMoving = true;
         }
         if (Input.GetKey(KeyCode.RightShift) && (polar.radius < polar.maxRad))
         {
             polar.radius += moveSpeed * Time.deltaTime;
+            isMoving = true;
         }
 
         // prevents looping over/under 360 degrees
@@ -105,6 +118,9 @@ public class InteractionZones : MonoBehaviour
         // positions[(int)currentState] = centerPoint + offset;
         transform.position = centerPoint + offset;
         // above will seemingly stay since key inputs will be phased out by hand inputs
+
+        Vector3 currentPosition = transform.position;
+        Vector3 movement = currentPosition - previousPosition;
 
         // Cycle up
         if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -138,8 +154,18 @@ public class InteractionZones : MonoBehaviour
 
         // get the object to look at the center point no matter where we move it in zones
         // gravity is off and y-position locked so we don't move at all in y-axis
-        // will need to change when moving :(
-        this.transform.LookAt(centerPoint);
+        if (isMoving)
+        {
+            movement.y = 0f;
+            transform.rotation = Quaternion.LookRotation(movement.normalized);
+        }
+        // nope, find another way like with a timer or something
+        else
+        { 
+            this.transform.LookAt(centerPoint);
+        }
+
+        previousPosition = currentPosition;
     }
 
     void FixedUpdate()
