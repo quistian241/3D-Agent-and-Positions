@@ -28,7 +28,7 @@ public class aiTest : MonoBehaviour
     public TextMeshProUGUI display;
     private string API_KEY = "API_KEY"; // Please REMOVE this API key before pushing to GitHub
 
-    void callGemini(string prompt)
+    public void callGemini(string prompt)
     {
         string modelPath = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + API_KEY;
 
