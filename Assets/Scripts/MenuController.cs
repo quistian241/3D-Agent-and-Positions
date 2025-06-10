@@ -9,7 +9,7 @@ public class MenuController : MonoBehaviour
     public Transform headLocation;
     public float distanceFromCamera = 0.75f;
 
-    private bool menuVisible = false;
+    public bool menuVisible = false;
 
     // XR input feature usages
     private InputDevice leftController;
@@ -25,12 +25,14 @@ public class MenuController : MonoBehaviour
         if (!leftController.isValid || !rightController.isValid)
         {
             Start();
+            TryInitializeControllers();
         }
-
+        TryInitializeControllers();
         // Check both controllers for primary and secondary button pressed
         if ((IsPrimaryPressed(leftController) || IsPrimaryPressed(rightController)) && !menuVisible)
         {
             ShowMenu();
+            Debug.Log("Menu shown using primary button.");
         }
     }
 
@@ -45,6 +47,7 @@ public class MenuController : MonoBehaviour
             leftController = leftHandedControllers[0];
         if (rightHandedControllers.Count > 0)
             rightController = rightHandedControllers[0];
+        Debug.Log("Controllers initialized: Left - " + leftController.isValid + ", Right - " + rightController.isValid);
     }
 
     private bool IsPrimaryPressed(InputDevice controller)
@@ -66,11 +69,13 @@ public class MenuController : MonoBehaviour
         menu.transform.rotation = Quaternion.LookRotation(forward);
         menu.SetActive(true);
         menuVisible = true;
+        Debug.Log("Menu shown at position: " + menu.transform.position + " with rotation: " + menu.transform.rotation.eulerAngles);
     }
 
     public void HideMenu()
     {
         menu.SetActive(false);
         menuVisible = false;
+        Debug.Log("Menu hidden.");
     }
 }
