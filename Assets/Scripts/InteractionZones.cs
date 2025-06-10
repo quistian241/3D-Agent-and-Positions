@@ -45,6 +45,7 @@ public class InteractionZones : MonoBehaviour
     Dictionary<zoneState, ZonePolarCoord> inactiveZoneCoords = new();
     private zoneState inactiveState = zoneState.socialZone;
     private zoneState activeState = zoneState.intimateZone;
+    
     private bool userInputAllow = false;
     private bool canChangeZone = true;
     private bool canMove = false;
@@ -72,6 +73,12 @@ public class InteractionZones : MonoBehaviour
         agentAnimator = GetComponentInChildren<Animator>();
 
         directionMove = "";
+    }
+
+    private Vector3 previousPosition;
+    void Start()
+    {
+        previousPosition = transform.position;
     }
 
     private Vector3 previousPosition;
@@ -180,6 +187,7 @@ public class InteractionZones : MonoBehaviour
         {
             movement.y = 0f;
             transform.rotation = Quaternion.LookRotation(movement.normalized);
+            
             agentAnimator.SetFloat("isMoving", 1);
         }
         // nope, find another way like with a timer or something
@@ -192,6 +200,7 @@ public class InteractionZones : MonoBehaviour
                 agentAnimator.SetFloat("isActive", 1);
             else
                 agentAnimator.SetFloat("isActive", 0);
+
         }
 
         previousPosition = currentPosition;
