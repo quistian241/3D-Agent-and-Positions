@@ -24,16 +24,13 @@ public class MenuController : MonoBehaviour
     {
         if (!leftController.isValid || !rightController.isValid)
         {
-            TryInitializeControllers();
+            Start();
         }
 
-        // Check both controllers for grip and trigger pressed
-        if (IsGripAndTriggerPressed(leftController) || IsGripAndTriggerPressed(rightController))
+        // Check both controllers for primary and secondary button pressed
+        if ((IsPrimaryPressed(leftController) || IsPrimaryPressed(rightController)) && !menuVisible)
         {
-            if (!menuVisible)
-            {
-                ShowMenu();
-            }
+            ShowMenu();
         }
     }
 
@@ -50,18 +47,16 @@ public class MenuController : MonoBehaviour
             rightController = rightHandedControllers[0];
     }
 
-    private bool IsGripAndTriggerPressed(InputDevice controller)
+    private bool IsPrimaryPressed(InputDevice controller)
     {
         if (!controller.isValid)
             return false;
 
-        bool gripPressed = false;
-        bool triggerPressed = false;
+        bool primaryPressed = false;
 
-        controller.TryGetFeatureValue(CommonUsages.gripButton, out gripPressed);
-        controller.TryGetFeatureValue(CommonUsages.triggerButton, out triggerPressed);
+        controller.TryGetFeatureValue(CommonUsages.primaryButton, out primaryPressed);
 
-        return gripPressed && triggerPressed;
+        return primaryPressed;
     }
 
     public void ShowMenu()
