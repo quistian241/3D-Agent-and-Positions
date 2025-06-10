@@ -81,12 +81,6 @@ public class InteractionZones : MonoBehaviour
         previousPosition = transform.position;
     }
 
-    private Vector3 previousPosition;
-    void Start()
-    {
-        previousPosition = transform.position;
-    }
-
     // Update is called once per frame
     void Update()
     {
