@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 public class InteractionZones : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class InteractionZones : MonoBehaviour
 
     // movement constants
     float rotationSpeed = 45f;
-    float moveSpeed = 4f;
+    float moveSpeed = 2f;
 
     // Variables that Govern Agent Movement
     private bool userActive = false;
@@ -29,36 +30,55 @@ public class InteractionZones : MonoBehaviour
         public float radius;
         public float minRad;
         public float maxRad;
+        public float zoneSpeed;
 
-        public ZonePolarCoord(float angle, float radius, float minRad, float maxRad)
+        public ZonePolarCoord(float angle, float radius, float minRad, float maxRad, float zoneSpeed)
         {
             this.angle = angle;
             this.radius = radius;
             this.minRad = minRad;
             this.maxRad = maxRad;
+            this.zoneSpeed = zoneSpeed;
         }
     }
     Dictionary<zoneState, ZonePolarCoord> activeZoneCoords = new();
     Dictionary<zoneState, ZonePolarCoord> inactiveZoneCoords = new();
     private zoneState inactiveState = zoneState.socialZone;
     private zoneState activeState = zoneState.intimateZone;
+    
+    private bool userInputAllow = false;
+    private bool canChangeZone = true;
     private bool canMove = false;
     private bool isMoving = false;
+
+    Animator agentAnimator;
+
+    string directionMove;
 
     // Start is called before the first frame update
     void Awake()
     {
         agentBody = GetComponent<Rigidbody>();
 
-        activeZoneCoords[zoneState.intimateZone] = new ZonePolarCoord(90f, 2f, 1.5f, 2.5f);
-        activeZoneCoords[zoneState.casualZone] = new ZonePolarCoord(90f, 3.5f, 2.5f, 4.5f);
-        activeZoneCoords[zoneState.socialZone] = new ZonePolarCoord(90f, 8f, 4.5f, 12f);
-        activeZoneCoords[zoneState.publicZone] = new ZonePolarCoord(90f, 12f, 12f, 20f);
+        activeZoneCoords[zoneState.intimateZone] = new ZonePolarCoord(90f, 2f, 1.5f, 2.5f, 1f);
+        activeZoneCoords[zoneState.casualZone] = new ZonePolarCoord(90f, 3.5f, 2.5f, 4.5f, 1.5f);
+        activeZoneCoords[zoneState.socialZone] = new ZonePolarCoord(90f, 8f, 4.5f, 12f, 2.5f);
+        activeZoneCoords[zoneState.publicZone] = new ZonePolarCoord(90f, 12f, 12f, 20f, 4f);
 
-        inactiveZoneCoords[zoneState.intimateZone] = new ZonePolarCoord(90f, 2f, 1.5f, 2.5f);
-        inactiveZoneCoords[zoneState.casualZone] = new ZonePolarCoord(90f, 3.5f, 2.5f, 4.5f);
-        inactiveZoneCoords[zoneState.socialZone] = new ZonePolarCoord(90f, 8f, 4.5f, 12f);
-        inactiveZoneCoords[zoneState.publicZone] = new ZonePolarCoord(90f, 12f, 12f, 20f);
+        inactiveZoneCoords[zoneState.intimateZone] = new ZonePolarCoord(90f, 2f, 1.5f, 2.5f, 1f);
+        inactiveZoneCoords[zoneState.casualZone] = new ZonePolarCoord(90f, 3.5f, 2.5f, 4.5f, 1.5f);
+        inactiveZoneCoords[zoneState.socialZone] = new ZonePolarCoord(90f, 8f, 4.5f, 12f, 2.5f);
+        inactiveZoneCoords[zoneState.publicZone] = new ZonePolarCoord(90f, 12f, 12f, 20f, 4f);
+
+        agentAnimator = GetComponentInChildren<Animator>();
+
+        directionMove = "";
+    }
+
+    private Vector3 previousPosition;
+    void Start()
+    {
+        previousPosition = transform.position;
     }
 
     private Vector3 previousPosition;
@@ -82,30 +102,33 @@ public class InteractionZones : MonoBehaviour
         // default unless moving
         isMoving = false;
 
-        // rotate the agent 
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            polar.angle -= rotationSpeed * Time.deltaTime;
-            isMoving = true;
-        }
-        if (Input.GetKey(KeyCode.RightArrow))
-        {
-            polar.angle += rotationSpeed * Time.deltaTime;
-            isMoving = true;
-        }
+        if (canMove && userInputAllow)
+        { 
+            // rotate the agent 
+            if (Input.GetKey(KeyCode.RightArrow) || directionMove == "Right Hand Thumbs Side")
+            {
+                polar.angle -= rotationSpeed * Time.deltaTime;
+                isMoving = true;
+            }
+            if (Input.GetKey(KeyCode.LeftArrow) || directionMove == "Right Hand Point Sideways")
+            {
+                polar.angle += rotationSpeed * Time.deltaTime;
+                isMoving = true;
+            }
 
-        //move agent
-        if (Input.GetKey(KeyCode.RightControl) && (polar.minRad < polar.radius))
-        {
-            polar.radius -= moveSpeed * Time.deltaTime;
-            isMoving = true;
+            //move agent
+            if ((Input.GetKey(KeyCode.RightControl) || directionMove == "Right Hand Thumbs Up") && (polar.minRad < polar.radius))
+            {
+                polar.radius -= polar.zoneSpeed * Time.deltaTime;
+                isMoving = true;
+            }
+            if ((Input.GetKey(KeyCode.RightShift) || directionMove == "Right Hand Point Fowards") && (polar.radius < polar.maxRad))
+            {
+                polar.radius += polar.zoneSpeed * Time.deltaTime;
+                isMoving = true;
+            }
         }
-        if (Input.GetKey(KeyCode.RightShift) && (polar.radius < polar.maxRad))
-        {
-            polar.radius += moveSpeed * Time.deltaTime;
-            isMoving = true;
-        }
-
+        
         // prevents looping over/under 360 degrees
         polar.angle = (polar.angle + 360f) % 360;
         currentDic[currentState] = polar;
@@ -123,21 +146,27 @@ public class InteractionZones : MonoBehaviour
         Vector3 movement = currentPosition - previousPosition;
 
         // Cycle up
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (canChangeZone && userInputAllow)
         {
-            if (userActive)
-                IncrementZone(ref activeState);
-            else
-                IncrementZone(ref inactiveState);
-        }
+            if (Input.GetKeyDown(KeyCode.UpArrow) || directionMove == "Right Hand Point Fowards")
+            {
+                if (userActive)
+                    IncrementZone(ref activeState);
+                else
+                    IncrementZone(ref inactiveState);
 
-        // Cycle down
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            if (userActive)
-                DecrementZone(ref activeState);
-            else
-                DecrementZone(ref inactiveState);
+                StartCoroutine(Countdown());
+            }
+            // Cycle down
+            else if (Input.GetKeyDown(KeyCode.DownArrow) || directionMove == "Right Hand Thumbs Up")
+            {
+                if (userActive)
+                    DecrementZone(ref activeState);
+                else
+                    DecrementZone(ref inactiveState);
+
+                StartCoroutine(Countdown());
+            } 
         }
 
         // Toggle active/inactive with spacebar
@@ -158,11 +187,20 @@ public class InteractionZones : MonoBehaviour
         {
             movement.y = 0f;
             transform.rotation = Quaternion.LookRotation(movement.normalized);
+            
+            agentAnimator.SetFloat("isMoving", 1);
         }
         // nope, find another way like with a timer or something
         else
-        { 
+        {
             this.transform.LookAt(centerPoint);
+            agentAnimator.SetFloat("isMoving", 0);
+
+            if (userActive)
+                agentAnimator.SetFloat("isActive", 1);
+            else
+                agentAnimator.SetFloat("isActive", 0);
+
         }
 
         previousPosition = currentPosition;
@@ -174,9 +212,10 @@ public class InteractionZones : MonoBehaviour
     }
 
     // take hand gesture input and change state from active -> inactive OR inactive -> active
-    void changeState()
+    public void changeState()
     {
         userActive = !userActive;
+        Debug.Log("User Active: " + userActive);
     }
 
 
@@ -199,14 +238,21 @@ public class InteractionZones : MonoBehaviour
 
     // will be used to toggle agent move mode
     // either two hand signs to enter or one to toggle
-    void allowMove(bool allowMove)
+    public void toggleZoneMovement()
     {
-        canMove = allowMove;
+        canMove = !canMove;
+        canChangeZone = !canChangeZone;
+        Debug.Log("Can Move: " + canMove + ", Can Change Zone: " + canChangeZone);
     }
 
-    void directionMove(string directionMove)
+    public void userInputDir(string directionMove)
     {
+        this.directionMove = directionMove;
+    }
 
+    public void userAllow(bool userInputAllow)
+    {
+        this.userInputAllow = userInputAllow;
     }
 
     // Helpers to change Enums up or Down
@@ -229,6 +275,13 @@ public class InteractionZones : MonoBehaviour
         {
             state = (zoneState)prev;
         }
+    }
+
+    IEnumerator Countdown()
+    {
+        this.canChangeZone = false;
+        yield return new WaitForSeconds(1);
+        this.canChangeZone = true;
     }
 
     float CalculateHypotenuse(float x, float z)
