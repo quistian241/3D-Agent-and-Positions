@@ -409,7 +409,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 58481107}
   _rigidbody: {fileID: 56151455}
   _grabSource: {fileID: 0}
   _useClosestPointAsGrabSource: 1
@@ -432,7 +432,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 58481107}
   _rigidbody: {fileID: 56151455}
   _physicsGrabbable: {fileID: 0}
   _resetGrabOnGrabsUpdated: 1
@@ -1960,7 +1960,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 258742872}
   _rigidbody: {fileID: 258640362}
   _grabSource: {fileID: 0}
   _useClosestPointAsGrabSource: 1
@@ -1983,7 +1983,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 258742872}
   _rigidbody: {fileID: 258640362}
   _physicsGrabbable: {fileID: 0}
   _resetGrabOnGrabsUpdated: 1
@@ -2707,7 +2707,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 584450257}
   _rigidbody: {fileID: 584450250}
   _physicsGrabbable: {fileID: 0}
   _resetGrabOnGrabsUpdated: 1
@@ -2770,7 +2770,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 584450257}
   _rigidbody: {fileID: 584450250}
   _grabSource: {fileID: 0}
   _useClosestPointAsGrabSource: 1
@@ -3255,7 +3255,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 799376476}
   _rigidbody: {fileID: 799252190}
   _grabSource: {fileID: 0}
   _useClosestPointAsGrabSource: 1
@@ -3278,7 +3278,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 799376476}
   _rigidbody: {fileID: 799252190}
   _physicsGrabbable: {fileID: 0}
   _resetGrabOnGrabsUpdated: 1
@@ -3621,7 +3621,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 901770693}
   _rigidbody: {fileID: 899381645}
   _grabSource: {fileID: 0}
   _useClosestPointAsGrabSource: 1
@@ -3644,7 +3644,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 901770693}
   _rigidbody: {fileID: 899381645}
   _physicsGrabbable: {fileID: 0}
   _resetGrabOnGrabsUpdated: 1
@@ -4252,7 +4252,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 925886194}
   _rigidbody: {fileID: 925886191}
   _grabSource: {fileID: 0}
   _useClosestPointAsGrabSource: 1
@@ -4275,7 +4275,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 925886194}
   _rigidbody: {fileID: 925886191}
   _physicsGrabbable: {fileID: 0}
   _resetGrabOnGrabsUpdated: 1
@@ -4951,7 +4951,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 1362531454}
   _rigidbody: {fileID: 1362531447}
   _physicsGrabbable: {fileID: 0}
   _resetGrabOnGrabsUpdated: 1
@@ -5014,7 +5014,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 1362531454}
   _rigidbody: {fileID: 1362531447}
   _grabSource: {fileID: 0}
   _useClosestPointAsGrabSource: 1
@@ -5280,7 +5280,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 1739557658}
   _rigidbody: {fileID: 1739166106}
   _physicsGrabbable: {fileID: 0}
   _resetGrabOnGrabsUpdated: 1
