@@ -31,9 +31,10 @@ public class aiTest : MonoBehaviour
     public void callGemini(string prompt)
     {
         string modelPath = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + API_KEY;
+        string startPrompt = "Behave like an AI Agent named Amy. Respond in a friendly and helpful tone. Keep your responses less than 50 words.";
 
         Text text = new Text();
-        text.text = prompt;
+        text.text = startPrompt + prompt;
 
         Part part = new Part();
         part.parts = new List<Text>();
@@ -54,9 +55,10 @@ public class aiTest : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    async Task Start()
+    void Start()
     {
-        
+        string startPrompt = "Behave like an AI Agent named Amy. Respond in a friendly and helpful tone. Keep your responses concise. If you understand this instruction then respond with 'Hi, my name is Amy'.";
+        callGemini(startPrompt);
     }
 
     // Update is called once per frame
