@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 public class InteractionZones : MonoBehaviour
 {
@@ -44,11 +45,14 @@ public class InteractionZones : MonoBehaviour
     Dictionary<zoneState, ZonePolarCoord> inactiveZoneCoords = new();
     private zoneState inactiveState = zoneState.socialZone;
     private zoneState activeState = zoneState.intimateZone;
+    private bool userInputAllow = false;
     private bool canChangeZone = true;
     private bool canMove = false;
     private bool isMoving = false;
 
     Animator agentAnimator;
+
+    string directionMove;
 
     // Start is called before the first frame update
     void Awake()
@@ -66,6 +70,8 @@ public class InteractionZones : MonoBehaviour
         inactiveZoneCoords[zoneState.publicZone] = new ZonePolarCoord(90f, 12f, 12f, 20f, 4f);
 
         agentAnimator = GetComponentInChildren<Animator>();
+
+        directionMove = "";
     }
 
     private Vector3 previousPosition;
@@ -89,30 +95,33 @@ public class InteractionZones : MonoBehaviour
         // default unless moving
         isMoving = false;
 
-        // rotate the agent 
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            polar.angle -= rotationSpeed * Time.deltaTime;
-            isMoving = true;
-        }
-        if (Input.GetKey(KeyCode.RightArrow))
-        {
-            polar.angle += rotationSpeed * Time.deltaTime;
-            isMoving = true;
-        }
+        if (canMove && userInputAllow)
+        { 
+            // rotate the agent 
+            if (Input.GetKey(KeyCode.RightArrow) || directionMove == "Right Hand Thumbs Side")
+            {
+                polar.angle -= rotationSpeed * Time.deltaTime;
+                isMoving = true;
+            }
+            if (Input.GetKey(KeyCode.LeftArrow) || directionMove == "Right Hand Point Sideways")
+            {
+                polar.angle += rotationSpeed * Time.deltaTime;
+                isMoving = true;
+            }
 
-        //move agent
-        if (Input.GetKey(KeyCode.RightControl) && (polar.minRad < polar.radius))
-        {
-            polar.radius -= polar.zoneSpeed * Time.deltaTime;
-            isMoving = true;
+            //move agent
+            if ((Input.GetKey(KeyCode.RightControl) || directionMove == "Right Hand Thumbs Up") && (polar.minRad < polar.radius))
+            {
+                polar.radius -= polar.zoneSpeed * Time.deltaTime;
+                isMoving = true;
+            }
+            if ((Input.GetKey(KeyCode.RightShift) || directionMove == "Right Hand Point Fowards") && (polar.radius < polar.maxRad))
+            {
+                polar.radius += polar.zoneSpeed * Time.deltaTime;
+                isMoving = true;
+            }
         }
-        if (Input.GetKey(KeyCode.RightShift) && (polar.radius < polar.maxRad))
-        {
-            polar.radius += polar.zoneSpeed * Time.deltaTime;
-            isMoving = true;
-        }
-
+        
         // prevents looping over/under 360 degrees
         polar.angle = (polar.angle + 360f) % 360;
         currentDic[currentState] = polar;
@@ -130,21 +139,27 @@ public class InteractionZones : MonoBehaviour
         Vector3 movement = currentPosition - previousPosition;
 
         // Cycle up
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (canChangeZone && userInputAllow)
         {
-            if (userActive)
-                IncrementZone(ref activeState);
-            else
-                IncrementZone(ref inactiveState);
-        }
+            if (Input.GetKeyDown(KeyCode.UpArrow) || directionMove == "Right Hand Point Fowards")
+            {
+                if (userActive)
+                    IncrementZone(ref activeState);
+                else
+                    IncrementZone(ref inactiveState);
 
-        // Cycle down
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            if (userActive)
-                DecrementZone(ref activeState);
-            else
-                DecrementZone(ref inactiveState);
+                StartCoroutine(Countdown());
+            }
+            // Cycle down
+            else if (Input.GetKeyDown(KeyCode.DownArrow) || directionMove == "Right Hand Thumbs Up")
+            {
+                if (userActive)
+                    DecrementZone(ref activeState);
+                else
+                    DecrementZone(ref inactiveState);
+
+                StartCoroutine(Countdown());
+            } 
         }
 
         // Toggle active/inactive with spacebar
@@ -221,9 +236,14 @@ public class InteractionZones : MonoBehaviour
         Debug.Log("Can Move: " + canMove + ", Can Change Zone: " + canChangeZone);
     }
 
-    void directionMove(string directionMove)
+    public void userInputDir(string directionMove)
     {
+        this.directionMove = directionMove;
+    }
 
+    public void userAllow(bool userInputAllow)
+    {
+        this.userInputAllow = userInputAllow;
     }
 
     // Helpers to change Enums up or Down
@@ -246,6 +266,13 @@ public class InteractionZones : MonoBehaviour
         {
             state = (zoneState)prev;
         }
+    }
+
+    IEnumerator Countdown()
+    {
+        this.canChangeZone = false;
+        yield return new WaitForSeconds(1);
+        this.canChangeZone = true;
     }
 
     float CalculateHypotenuse(float x, float z)
